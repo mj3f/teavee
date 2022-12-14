@@ -1,3 +1,8 @@
+# TeaVee
+Demo app to test mono repo and module federation with a simple tv show listings app.
+
+
+
 # Turborepo starter
 
 This is an official npm starter turborepo.
