@@ -1,6 +1,47 @@
 # TeaVee
 Demo app to test mono repo and module federation with a simple tv show listings app.
 
+## CRA and shared UI components
+Follow the steps below.
+
+https://github.com/vercel/turbo/issues/360#issuecomment-1013885148
+
+Specifically:
+
+    Install npm i tsup -D to UI project (docs)
+    In UI's package.json configure build and dev scripts to compile output (to /dist directory):
+
+    "build": "tsup src/index.tsx --format esm,cjs --dts --external react",
+    "dev": "tsup src/index.tsx --format esm,cjs --watch --dts --external react",
+
+    Also in UI's package.json, update source file locations to match this /dist location:
+
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+
+    In your CRA/Remix's package.json, ensure you are importing the ui library:
+
+    "dependencies": {
+        ...
+        "ui": "*"
+    },
+
+    Import and use components as usual:
+
+import { Button } from "ui";
+
+const Home: FC = (props) => {
+  return (
+    <div>
+      <Button />
+    </div>
+  );
+};
+
+Updates to UI components will automatically update and refresh the CRA, whereas a change to the Remix codebase is necessary to recompile and display modifications.
+
+NOTE: You need to run `npm run build` on the ui library to generate the dist folder.
 
 
 # Turborepo starter

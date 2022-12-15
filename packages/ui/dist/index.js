@@ -17,14 +17,14 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// index.tsx
-var ui_exports = {};
-__export(ui_exports, {
+// src/index.tsx
+var src_exports = {};
+__export(src_exports, {
   Button: () => Button
 });
-module.exports = __toCommonJS(ui_exports);
+module.exports = __toCommonJS(src_exports);
 
-// Button.tsx
+// src/Button.tsx
 var import_jsx_runtime = require("react/jsx-runtime");
 var Button = (props) => {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { children: props.children });
