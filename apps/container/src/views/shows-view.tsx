@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 
 const ShowsDirectoryMicroFrontend = lazy(async () => import('ShowsDirectory/App'));
+// const ShowsDirectoryMicroFrontend = lazy(async () => import('ShowsDirectory/About'));
 
 const ShowsView = () => {
     return (

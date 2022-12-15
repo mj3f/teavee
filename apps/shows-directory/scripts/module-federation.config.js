@@ -1,11 +1,14 @@
 const { dependencies } = require('../package.json');
 
 module.exports = {
-    name: 'Container',
+    name: 'ShowsDirectory',
     exposes: {
-        './App': './src/App'
+        './App': './src/App',
+        './About': './src/components/About'
     },
+    filename: 'remoteEntry.js',
     shared: {
+        ...dependencies,
         react: {
             singleton: true,
             requiredVersion: dependencies.react,
