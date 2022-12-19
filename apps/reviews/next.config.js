@@ -30,3 +30,4 @@ module.exports = {
     return config;
   },
 };
+// https://github.com/module-federation/module-federation-examples/tree/master/react-nextjs/react-host-nextjs-remote
