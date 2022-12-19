@@ -10,25 +10,48 @@ npm run dev
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Module Federation
+[https://github.com/module-federation/nextjs-mf/tree/main/packages/nextjs-mf](Link here)
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Steps to get a NextJS remote app to load within a CRA host app:
+- Install the following package into the next app `@module-federation/nextjs-mf`
+- Insert the following into the next.config.js file:
+`const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+module.exports = {
+  webpack(config, options) {
+    const { isServer } = options;
+    config.plugins.push(
+      new NextFederationPlugin({
+        name: 'Reviews',
+        filename: 'static/chunks/remoteEntry.js',
+        exposes: {
+          './Home': './pages/index.tsx',
+        },
+        remotes: {}, // required, but empty,
+        shared: {
+          react: {
+            singleton: true,
+            requiredVersion: false,
+          },
+          'react-dom': {
+              singleton: true,
+              requiredVersion: false,
+          },
+        },
+        extraOptions: {
+          skipSharingNextInternals: true
+        }
+      })
+    );
+    return config;
+  },
+};`
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Make sure of the following:
+1. The filename has the 'static/chunks/' prefix - as the entry point is defined within the .next/ folder.
+2. The remotes & exposes sections are defined, even if empty, as they are both required, regardless if the app is a host or remote.
+3. Any components to be exposed have their file extension included.
+4. skipSharingNextInterals is set to true. This is important if the container app is not a next app, as you will run into errors otherwise.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- To get css styling from a next app working in the CRA container app, you will need to add the following line inside `public/index.html` in the container app: `<noscript id="__next_css__DO_NOT_USE__"></noscript>`
