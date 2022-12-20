@@ -3,6 +3,7 @@ import './App.css';
 
 const ShowsView = lazy(() => import('./views/shows-view'));
 const ReviewsView = lazy(() => import('./views/reviews-view'));
+// const Banner = lazy(() => import('NextHostAndRemote/Banner'));
 
 function App() {
   return (
@@ -14,6 +15,9 @@ function App() {
       <Suspense fallback={'loading reviews...'}>
         <ReviewsView />
       </Suspense>
+      {/* <Suspense fallback={'loading banner...'}>
+        <Banner />
+      </Suspense> */}
     </div>
   );
 }

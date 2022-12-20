@@ -5,6 +5,7 @@ module.exports = {
     remotes: {
         ShowsDirectory: 'ShowsDirectory@http://localhost:3001/remoteEntry.js',
         Reviews: 'Reviews@http://localhost:3002/_next/static/chunks/remoteEntry.js',
+        // NextHostAndRemote: 'NextHostAndRemote@http://localhost:3003/_next/static/chunks/remoteEntry.js'
     },
     shared: {
         react: {
