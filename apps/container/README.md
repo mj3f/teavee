@@ -1,46 +1,89 @@
-# Getting Started with Create React App
+# Container
+This app is a container app to load in micro-frontends via webpack module federation.
+It was built using create-react-app.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Module Federation setup
+The following setup process makes use of the existing webpack config from create-react-app v5. It does not eject, nor create a custom config, though that is also a viable option. This process does involve creating a webpack module federation config file though.
 
-## Available Scripts
+### Steps
+- First ensure that create-react-app (react-scripts) is version 5.
+- Create a file called `bootstrap.js` inside the `src/` directory, alongside the `App.tsx` file. Move the contents of the `index.tsx` file into bootstrap, and replace the contents in index with `import(./bootstrap)`.
+- Add a `scripts` folder in the root directory of the project, with the following 4 files:
+    - start.js
+    - build.js
+    - webpack.config.js
+    - module-federation.config.js
 
-In the project directory, you can run:
+- Modify the 'start' and 'build' scripts in `package.json` to the following:
 
-### `npm start`
+      "start": "node ./scripts/start.js",
+      "build": "node ./scripts/build.js"
+    
+- Add the following in the `start.js` script:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+       process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+       require('./webpack.config);
+       require('react-scripts/scripts/start);
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Add the following in the `build.js` script file:
 
-### `npm test`
+       process.env.NODE_ENV = 'production';
+       require('./webpack.config');
+       require('react-scripts/scripts/build');
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Add the following to the webpack.config.js file (make sure the node-polyfill-webpack-plugin is installed via `npm i`):
 
-### `npm run build`
+       const { ModuleFederationPlugin } = require('webpack').contianer;
+       const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+       const webpackConfigPath = 'react-scripts/config/webpack.config';
+       const webpackConfig = require(webpackConfigPath);
+       const moduleFederationConfig = require('./module-federation.config');
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+       const override = (config) => {
+            config.plugins.push(
+                new ModuleFederationPlugin(moduleFederationConfig),
+                new NodePolyfillPlugin()
+            );
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+            const configPublicPath = {
+                output: {
+                    publicPath: 'auto'
+                },
+            };
 
-### `npm run eject`
+            return {
+                ...config,
+                ...configPublicPath
+            };
+       };
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+       require.cache[require.resolve(webpackConfigPath)].exports = (env) =>
+            override(wepackConfig(env));
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+       module.exports = require(webpackConfigPath);
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- Add the following to the `module-federation.config.js` file:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+       const { dependencies } = require('../package.json');
+       
+       module.exports = {
+            name: 'NameOfApp',
+            remotes: {
+                NameOfMicroApp: 'NameOfMicroApp@http://url:port/remoteEntry.js'
+            },
+            exposes: {
+                './Name' : './path/to/component'
+            },
+            shared: {
+                react: {
+                    singleton: true,
+                    requiredVersion: dependencies.react
+                },
+                'react-dom': {
+                    singleton: true,
+                    requiredVersion: dependencies['react-dom']
+                },
+            },
+       };
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
