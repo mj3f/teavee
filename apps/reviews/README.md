@@ -16,37 +16,38 @@ yarn dev
 Steps to get a NextJS remote app to load within a CRA host app:
 - Install the following package into the next app `@module-federation/nextjs-mf`
 - Insert the following into the next.config.js file:
-`const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
 
-module.exports = {
-  webpack(config, options) {
-    const { isServer } = options;
-    config.plugins.push(
-      new NextFederationPlugin({
-        name: 'Reviews',
-        filename: 'static/chunks/remoteEntry.js',
-        exposes: {
-          './Home': './pages/index.tsx',
+      const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
+
+      module.exports = {
+        webpack(config, options) {
+          const { isServer } = options;
+          config.plugins.push(
+            new NextFederationPlugin({
+              name: 'Reviews',
+              filename: 'static/chunks/remoteEntry.js',
+              exposes: {
+                './Home': './pages/index',
+              },
+              remotes: {}, // required, but empty,
+              shared: {
+                react: {
+                  singleton: true,
+                  requiredVersion: false,
+                },
+                'react-dom': {
+                    singleton: true,
+                    requiredVersion: false,
+                },
+              },
+              extraOptions: {
+                skipSharingNextInternals: true
+              }
+            })
+          );
+          return config;
         },
-        remotes: {}, // required, but empty,
-        shared: {
-          react: {
-            singleton: true,
-            requiredVersion: false,
-          },
-          'react-dom': {
-              singleton: true,
-              requiredVersion: false,
-          },
-        },
-        extraOptions: {
-          skipSharingNextInternals: true
-        }
-      })
-    );
-    return config;
-  },
-};`
+      };
 
 Make sure of the following:
 1. The filename has the 'static/chunks/' prefix - as the entry point is defined within the .next/ folder.
@@ -55,3 +56,5 @@ Make sure of the following:
 4. In the container apps 'remotes' section, make sure the path to the remoteEntry file is '_next/static/chunks/remoteEntry.js'.
 
 - To get css styling from a next app working in the CRA container app, you will need to add the following line inside `public/index.html` in the container app: `<noscript id="__next_css__DO_NOT_USE__"></noscript>`
+
+- In the container, if you're using eslint and typescript, you will need to define a `tsremote_declarations.ts` file in `/src` with `declare module "NameOfMicroApp/Component"`, and in `tsconfig.json`, set `isolatedModules` to false. (If using VS CODE!).

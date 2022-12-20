@@ -1,0 +1,14 @@
+{
+  "name": "nextapp2remoteandhost",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3003",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@module-federation/nextjs-mf": "^5.12.10"
+  }
+}
