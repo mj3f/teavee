@@ -1,48 +1,65 @@
 # TeaVee
-Demo app to test mono repo and module federation with a simple tv show listings app.
+Demo app to test mono repo and module federation with a collection of react apps.
+
+## Structure
+This project is a monorepo using [Turborepo](https://turbo.build/repo/docs), and consists of several react web applications, built with create-react-app and NextJS.
+
+The container application is the 'host' app that loads in micro-frontends using module federation. This was built using create-react-app.
+
+The shows-directory application is a 'remote' app, that exposes it's main component to be loaded into the container as a micro-frontend. This was built using create-react-app.
+
+The reviews application is a 'remote' app, similar to shows-directory, however this was built using NextJS. The process to get module federation working with NextJS is a little different, and is documented
+within the reviews project [README.md](./apps/reviews/README.md) file.
+
+### Project-specific documentation
+Refer to each indiviudal projects README for additional information:
+- [container (CRA host)](./apps/container/README.md)
+- [shows-directory (CRA remote)](./apps/shows-directory/README.md)
+- [reviews (NextJS remote)](./apps/reviews/README.md)
 
 ## CRA and shared UI components
-Follow the steps below.
+To make use of the turborepo feature of sharing functions/components/etc and using them in a create-react-app project, since in cra you cannot normally import components (jsx) from outside the src/ directory, you need to follow the steps below to get this working:
 
-https://github.com/vercel/turbo/issues/360#issuecomment-1013885148
+[Link for more information](https://github.com/vercel/turbo/issues/360#issuecomment-1013885148)
 
 Specifically:
 
-    Install npm i tsup -D to UI project (docs)
+  1. Install npm i tsup -D to UI project (docs)
     In UI's package.json configure build and dev scripts to compile output (to /dist directory):
 
     "build": "tsup src/index.tsx --format esm,cjs --dts --external react",
     "dev": "tsup src/index.tsx --format esm,cjs --watch --dts --external react",
 
-    Also in UI's package.json, update source file locations to match this /dist location:
+  2. In UI's package.json, update source file locations to match this /dist location:
 
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
 
-    In your CRA/Remix's package.json, ensure you are importing the ui library:
+  3. In your CRA package.json, ensure you are importing the ui library:
 
     "dependencies": {
         ...
         "ui": "*"
     },
 
-    Import and use components as usual:
+  4. Import and use components as usual:
 
-import { Button } from "ui";
+    import { Button } from "ui";
 
-const Home: FC = (props) => {
-  return (
-    <div>
-      <Button />
-    </div>
-  );
-};
+    const Home: FC = (props) => {
+      return (
+        <div>
+          <Button />
+        </div>
+      );
+    };
 
 Updates to UI components will automatically update and refresh the CRA, whereas a change to the Remix codebase is necessary to recompile and display modifications.
 
 NOTE: You need to run `npm run build` on the ui library to generate the dist folder.
 
+---
 
 # Turborepo starter
 

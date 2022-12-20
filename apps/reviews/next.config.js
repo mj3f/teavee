@@ -9,7 +9,7 @@ module.exports = {
         name: 'Reviews',
         filename: 'static/chunks/remoteEntry.js',
         exposes: {
-          './Home': './pages/index.tsx',
+          './Home': './pages/index',
         },
         remotes: {}, // required, but empty,
         shared: {

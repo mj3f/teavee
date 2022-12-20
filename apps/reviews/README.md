@@ -51,7 +51,7 @@ module.exports = {
 Make sure of the following:
 1. The filename has the 'static/chunks/' prefix - as the entry point is defined within the .next/ folder.
 2. The remotes & exposes sections are defined, even if empty, as they are both required, regardless if the app is a host or remote.
-3. Any components to be exposed have their file extension included.
-4. skipSharingNextInterals is set to true. This is important if the container app is not a next app, as you will run into errors otherwise.
+3. skipSharingNextInterals is set to true. This is important if the container app is not a next app, as you will run into errors otherwise.
+4. In the container apps 'remotes' section, make sure the path to the remoteEntry file is '_next/static/chunks/remoteEntry.js'.
 
 - To get css styling from a next app working in the CRA container app, you will need to add the following line inside `public/index.html` in the container app: `<noscript id="__next_css__DO_NOT_USE__"></noscript>`
